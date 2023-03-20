@@ -13,5 +13,6 @@
 #define vertex_array_h		__comp(header_path, vertex_array.h)
 #define shader_h			__comp(header_path, shader.h)
 #define gutil_h				__comp(header_path, gutil.h)
+#define wfc_h               __comp(header_path, wfc.h)
 
 #endif
