@@ -28,7 +28,13 @@ namespace graphics {
 
 		std::cout << "successfully loaded png: " << file << ": width: " << width << " : height: " << height << "\n";
 
-		buffer = tbuffer.data();
+		//tbuffer is stack allocated so you cant copy the pointer since it is freed with the stack
+		buffer = (uchar*)malloc(sizeof(uchar) * tbuffer.size());
+		
+		//copy stack buffer to heap
+		for(size_t i = 0; i < tbuffer.size(); i++){
+			buffer[i] = tbuffer[i];
+		}
 	}
 
 	image::~image() {
@@ -56,16 +62,16 @@ namespace graphics {
 		uchar* buff = get_buffer();
 
 		//wtf this works so my theory was correct
-		uchar DELTELATER[] = {
-			255, 0, 0, 255, 
-			0, 255, 0, 255,
-			0, 0, 255, 255,
-			255, 0, 255, 255,
-		};
+		// uchar DELTELATER[] = {
+		// 	255, 0, 0, 255, 
+		// 	0, 255, 0, 255,
+		// 	0, 0, 255, 255,
+		// 	255, 0, 255, 255,
+		// };
 
 		//std::cout << "buffer check: " << (uint)get_buffer()[0] << " " << (uint)get_buffer()[1] << " " << (uint)get_buffer()[2] << " " << std::endl;
 
-		//glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, get_width(), get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buff));
+		glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, get_width(), get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buff));
 		glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, DELTELATER));
 		glCall(glBindTexture(GL_TEXTURE_2D, 0));
 
