@@ -79,7 +79,7 @@ int main() {
         graphics::renderer renderer;
 
         graphics::shader shader("shader/generic_shader");
-        graphics::texture texture("C:/Users/aadiu/Desktop/random stuff/testing.png");
+        graphics::texture texture("resources/testing.png");
         texture.bind();
         shader.set_1i("u_texture", 0);
 
