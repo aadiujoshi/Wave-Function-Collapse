@@ -11,7 +11,6 @@
 namespace graphics {
     class renderer {
     private:
-
     public:
         void clear() const;
         void draw(const graphics::vertex_array& va, const graphics::index_buffer& ib, const graphics::shader& sh) const;

@@ -3,8 +3,8 @@
 
 #define header_path <C:/Users/aadiu/Desktop/Programming Files/Personal Projects/C++ Projects/Wave Function Collapse/header/
 
-#define conc(a, b) a##b
-#define __comp(a, b) conc(a, b>)
+#define __conc(a, b) a##b
+#define __comp(a, b) __conc(a, b>)
 
 #define renderer_h			__comp(header_path, renderer.h)
 #define texture_h			__comp(header_path, texture.h)

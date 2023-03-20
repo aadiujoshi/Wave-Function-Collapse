@@ -13,6 +13,7 @@
 #include vertex_array_h
 #include index_buffer_h
 #include shader_h
+#include texture_h
 
 #define ARRLENGTH(arr, type) sizeof(arr)/sizeof(type)
 #define uint unsigned int
@@ -33,7 +34,7 @@ int main() {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        window = glfwCreateWindow(600, 600, "test window", NULL, NULL);
+        window = glfwCreateWindow(1920, 1080, "test window", NULL, NULL);
         if (!window) {
             glfwTerminate();
             return -3;
@@ -55,29 +56,32 @@ int main() {
         //-------------------------------------------------------------------------------------
         //-------------------------------------------------------------------------------------
 
-        float tri_pos[] = {
-            0.5f, 0.5f,
-            0.5f, -0.5f,
-            -0.5f, 0.5f,
-            -0.5f, -0.5f,
+        float rect_vertex[] = {
+            0.75f, 0.75f, 1.0f, 1.0f,
+            0.75f, -0.75f, 1.0f, 0.0,
+            -0.75f, 0.75f, 0.0f, 1.0f,
+            -0.75f, -0.75f, 0.0f, 0.0f
         };
 
         uint rect_indices[] = {
             0, 1, 3, 0, 2, 3
         };
 
+        glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+        glCall(glEnable(GL_BLEND));
+
         graphics::vertex_array vao;
-
-        graphics::vertex_buffer vbo(tri_pos, sizeof(tri_pos));
+        graphics::vertex_buffer vbo(rect_vertex, sizeof(rect_vertex));
         vbo.add_layout({ GL_FLOAT, 2, GL_FALSE });
-
+        vbo.add_layout({ GL_FLOAT, 2, GL_FALSE });
         vao.add_buffer(vbo);
-
         graphics::index_buffer ibo(rect_indices, ARRLENGTH(rect_indices, uint));
-
-        graphics::shader g_shader("shader/generic_shader");
-
         graphics::renderer renderer;
+
+        graphics::shader shader("shader/generic_shader");
+        graphics::texture texture("C:/Users/aadiu/Desktop/random stuff/testing.png");
+        texture.bind();
+        shader.set_1i("u_texture", 0);
 
         UNBIND_ALL();
 
@@ -87,15 +91,17 @@ int main() {
         while (!glfwWindowShouldClose(window)) {
             long long startNano = timeNs();
 
-            g_shader.set_4f("u_color", (float)(rand() / (RAND_MAX * 1.0f)),
-                (float)(rand() / (RAND_MAX * 1.0f)),
-                (float)(rand() / (RAND_MAX * 1.0f)), 1);
+            renderer.clear();
 
-            renderer.draw(vao, ibo, g_shader);
+            /*shader.set_4f("u_color", (float)(rand() / (RAND_MAX * 1.0f)),
+                (float)(rand() / (RAND_MAX * 1.0f)),
+                (float)(rand() / (RAND_MAX * 1.0f)), 1);*/
+
+            renderer.draw(vao, ibo, shader);
 
             glfwSwapBuffers(window);
 
-            glfwPollEvents();
+            glfwPollEvents();   
 
             std::string frames = std::string("fps: ") + std::to_string(0x3B9ACA00 / (timeNs() - startNano));
 
@@ -107,33 +113,4 @@ int main() {
     glfwTerminate();
 
     return 0;
-}
-
-
-namespace util {
-    void glClearErrors() {
-        while (glGetError() != GL_NO_ERROR);
-    }
-
-    bool glCheckErrors(const char* func, const char* file, int line) {
-
-        while (GLenum err = glGetError()) {
-            std::cout << "opengl error: " << err << " at : " << func << " line " << line << " in " << file << std::endl;
-            return false;
-        }
-
-        return true;
-    }
-
-    std::string readFile(std::string fname) {
-        std::ifstream file(fname);
-        if (!file.is_open()) {
-            std::cout << "failed to open file" << std::endl;
-            return "";
-        }
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        //std::cout << buffer.str();
-        return buffer.str();
-    }
 }

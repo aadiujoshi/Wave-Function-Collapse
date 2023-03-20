@@ -160,6 +160,10 @@
     <ClInclude Include="header\vertex_buffer.h" />
     <ClInclude Include="src\header_paths.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\generic_shader\fragment.shader" />
+    <None Include="shader\generic_shader\vertex.shader" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

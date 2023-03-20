@@ -27,11 +27,11 @@ namespace graphics {
 		for(uint i = 0; i < layouts.size(); i++) {
 			const vertex_buffer_layout vbl = layouts[i];
 
-			//std::cout << "vbl stuff: " << i << "  " << vbl.count << "  " << vb.get_stride() << "  " << layout_offset << std::endl;
+			std::cout << "vbl stuff: " << i << "  " << vbl.count << "  " << vb.get_stride() << "  " << layout_offset << std::endl;
 
 			glCall(glEnableVertexAttribArray(i));
 			glCall(glVertexAttribPointer(i, vbl.count, vbl.type, vbl.normalized, 
-										8, (const void*)layout_offset));
+										vb.get_stride(), (const void*)layout_offset));
 
 			layout_offset += vbl.count * vertex_buffer_layout::size_of_glType(vbl.type);
 		}

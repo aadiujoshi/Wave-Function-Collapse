@@ -5,10 +5,13 @@
 #include shader_h
 #include renderer_h
 
+#include <iostream>
+
 namespace graphics {
-	uint shader::create_shader(uint shader_type, const std::string& src0) {
+	uint shader::_create_shader(uint shader_type, const std::string& src0) {
 		uint sId = glCreateShader(shader_type);
 		const char* src = &src0[0];
+
 		glShaderSource(sId, 1, &src, nullptr);
 		glCompileShader(sId);
 
@@ -28,24 +31,45 @@ namespace graphics {
 
 		return sId;
 	}
-	uint shader::create_shader_config(const std::string& folder) {
+	uint shader::_create_shader_config(const std::string& folder) {
 		uint shaderConfig = glCreateProgram();
-		uint vs = create_shader(GL_VERTEX_SHADER, gutil::readFile(folder + "/vertex.shader"));
-		uint fs = create_shader(GL_FRAGMENT_SHADER, gutil::readFile(folder + "/fragment.shader"));
+		uint vs = _create_shader(GL_VERTEX_SHADER, gutil::readFile(folder + "/vertex.shader"));
+		uint fs = _create_shader(GL_FRAGMENT_SHADER, gutil::readFile(folder + "/fragment.shader"));
 
-		glAttachShader(shaderConfig, vs);
-		glAttachShader(shaderConfig, fs);
-		glLinkProgram(shaderConfig);
-		glValidateProgram(shaderConfig);
+		glCall(glAttachShader(shaderConfig, vs));
+		glCall(glAttachShader(shaderConfig, fs));
+		glCall(glLinkProgram(shaderConfig));
+		glCall(glValidateProgram(shaderConfig));
 
-		glDeleteShader(vs);
-		glDeleteShader(fs);
+		glCall(glDeleteShader(vs));
+		glCall(glDeleteShader(fs));
 
 		return shaderConfig;
 	}
 
+	int shader::_uniform_loc(const std::string& uniform) {
+		int tloc = 0;
+
+		if (uniform_buffer.find(uniform) == uniform_buffer.end()) {
+			glCall(uniform_buffer[uniform] = tloc = glGetUniformLocation(id, uniform.c_str()));
+
+			if (tloc < 0) {
+				std::cerr << "could not find uniform: " << uniform << std::endl;
+				__ASSERT(false);
+			}
+
+			std::cout << "hashed unif: " << uniform << "  id_loc: " << tloc << std::endl;
+		}
+		else {
+			std::cout << "retrieve unif: " << uniform << "  id_loc: " << tloc << std::endl;
+			tloc = uniform_buffer[uniform];
+		}
+
+		return tloc;
+	}
+
 	shader::shader(const std::string& folder) {
-		id = create_shader_config(folder);
+		id = _create_shader_config(folder);
 		bind();
 	}
 
@@ -62,16 +86,10 @@ namespace graphics {
 	}
 
 	void shader::set_4f(const std::string& uniform, float f1, float f2, float f3, float f4) {
-		uint tloc = 0;
+		glCall(glUniform4f(_uniform_loc(uniform), f1, f2, f3, f4));
+	}
 
-		if (uniform_buffer.find(uniform) == uniform_buffer.end()) {
-			glCall(uniform_buffer[uniform] = tloc = glGetUniformLocation(id, uniform.c_str()));
-			std::cout << "hashed unif: " << uniform << "  id_loc: " << tloc << std::endl;
-		}
-		else {
-			tloc = uniform_buffer[uniform];
-		}
-
-		glCall(glUniform4f(tloc, f1, f2, f3, f4));
+	void shader::set_1i(const std::string& uniform, int i1) {
+		glCall(glUniform1i(_uniform_loc(uniform), i1));
 	}
 }
