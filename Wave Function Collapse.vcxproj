@@ -149,6 +149,7 @@
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\vertex_array.cpp" />
     <ClCompile Include="src\vertex_buffer.cpp" />
+    <ClCompile Include="src\wfc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\gutil.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="header\texture.h" />
     <ClInclude Include="header\vertex_array.h" />
     <ClInclude Include="header\vertex_buffer.h" />
+    <ClInclude Include="header\wfc.h" />
     <ClInclude Include="src\header_paths.h" />
   </ItemGroup>
   <ItemGroup>

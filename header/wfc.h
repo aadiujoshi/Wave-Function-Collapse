@@ -6,27 +6,30 @@
 
 #define uchar unsigned char
 
-namespace wfc{
-    typedef struct _tile{
-        const uchar* constraint; 
+namespace gen {
 
-        static uchar* pixel_relative(unsigned int x_rel, unsigned int y_rel){
-            return 
+    //https://www.gridbugs.org/wave-function-collapse/
+
+    typedef struct _tile {
+        const uint t_id;
+        const uint adj_constraints[9];
+
+        static int adj_constraint_at(const tile& tl, int x_rel, int y_rel) {
+            return tl.adj_constraints[(1 + x_rel) + 3 * (1 + y_rel)];
         }
-    }
+
+    } tile;
 
 
-    class wfc{
-        private:
-            graphics::image& sample_image;
-            graphics::image& output_image;
+    class wfc {
+    private:
+        graphics::image& sample_image;
+        graphics::image& output_image;
+        const long seed;
+    public:
+        wfc(graphics::image& sample_image, graphics::image& output_image, const uint seed);
+        ~wfc();
 
-            const std::vector<>
-        public:
-            wfc(const graphics::image& sample_image, graphics::image& output_image);
-            ~wfc();
-
-            void reset();
-            void generate(long seed);
-    }
+        void next_collapse();
+    };
 }

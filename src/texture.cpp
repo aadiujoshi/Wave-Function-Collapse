@@ -32,8 +32,13 @@ namespace graphics {
 		buffer = (uchar*)malloc(sizeof(uchar) * tbuffer.size());
 		
 		//copy stack buffer to heap
-		for(size_t i = 0; i < tbuffer.size(); i++){
-			buffer[i] = tbuffer[i];
+
+		size_t sz = tbuffer.size();
+		for(size_t i = 0; i < tbuffer.size(); i+=4){
+			buffer[i + 0] = tbuffer[sz - i - 1 - 3];
+			buffer[i + 1] = tbuffer[sz - i - 1 - 2];
+			buffer[i + 2] = tbuffer[sz - i - 1 - 1];
+			buffer[i + 3] = tbuffer[sz - i - 1 - 0];
 		}
 	}
 
@@ -50,6 +55,14 @@ namespace graphics {
 		}
 	}
 
+	int image::masked_pixel(uint x, uint y) const {
+		uint ind = x + y * width;
+		return  (((int)buffer[ind + 3]) << 24) |
+				(((int)buffer[ind + 0]) << 16) |
+				(((int)buffer[ind + 1]) << 8) |
+				((int)buffer[ind + 2]);
+	}
+
 	texture::texture(const std::string& file) : image(file){
 		glCall(glGenTextures(1, &id));
 		glCall(glBindTexture(GL_TEXTURE_2D, id));
@@ -61,18 +74,7 @@ namespace graphics {
 
 		uchar* buff = get_buffer();
 
-		//wtf this works so my theory was correct
-		// uchar DELTELATER[] = {
-		// 	255, 0, 0, 255, 
-		// 	0, 255, 0, 255,
-		// 	0, 0, 255, 255,
-		// 	255, 0, 255, 255,
-		// };
-
-		//std::cout << "buffer check: " << (uint)get_buffer()[0] << " " << (uint)get_buffer()[1] << " " << (uint)get_buffer()[2] << " " << std::endl;
-
 		glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, get_width(), get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buff));
-		glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, DELTELATER));
 		glCall(glBindTexture(GL_TEXTURE_2D, 0));
 
 	}

@@ -45,6 +45,9 @@
     <ClCompile Include="src\gutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\wfc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\renderer.h">
@@ -69,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="header\gutil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\wfc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

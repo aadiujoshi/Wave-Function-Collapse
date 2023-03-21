@@ -23,6 +23,8 @@ namespace graphics {
 
 		void print() const;
 
+		int masked_pixel(uint x, uint y) const;
+
 		inline uint get_width() const {
 			return width;
 		};

@@ -34,7 +34,7 @@ int main() {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        window = glfwCreateWindow(1920, 1080, "test window", NULL, NULL);
+        window = glfwCreateWindow(1920, 1080, "window", NULL, NULL);
         if (!window) {
             glfwTerminate();
             return -3;
@@ -57,10 +57,10 @@ int main() {
         //-------------------------------------------------------------------------------------
 
         float rect_vertex[] = {
-            0.75f, 0.75f, 1.0f, 1.0f,
-            0.75f, -0.75f, 1.0f, 0.0,
-            -0.75f, 0.75f, 0.0f, 1.0f,
-            -0.75f, -0.75f, 0.0f, 0.0f
+            0.5f, 0.5f, 1.0f, 1.0f,
+            0.5f, -0.5f, 1.0f, 0.0,
+            -0.5f, 0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.0f, 0.0f
         };
 
         uint rect_indices[] = {
@@ -103,7 +103,7 @@ int main() {
 
             glfwPollEvents();   
 
-            std::string frames = std::string("fps: ") + std::to_string(0x3B9ACA00 / (timeNs() - startNano));
+            std::string frames = std::string("wavefunction collapse || fps: ") + std::to_string(0x3B9ACA00 / (timeNs() - startNano));
 
             glfwSetWindowTitle(window, frames.c_str());
         }
