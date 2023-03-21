@@ -8,8 +8,11 @@ namespace gen{
     
     wfc::wfc(graphics::image& sample_image, graphics::image& output_image, const uint seed) : 
         sample_image(sample_image), output_image(output_image), seed(seed){
-        
+
         srand(seed);
+
+        //INIT TILES
+        
     }
 
     wfc::~wfc() {
@@ -18,6 +21,7 @@ namespace gen{
     void wfc::next_collapse(){
         //FIND LOWEST ENTROPY TILE
         //COLLAPSE CHOSEN TILE AND CONSTRAINT WITH OTHER TILES
-        //REPEAT (EZ)
+        
+        
     }
 }

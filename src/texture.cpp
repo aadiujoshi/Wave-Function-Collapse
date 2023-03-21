@@ -56,7 +56,10 @@ namespace graphics {
 	}
 
 	int image::masked_pixel(uint x, uint y) const {
-		uint ind = x + y * width;
+		return masked_pixel(x + y * width);
+	}
+
+	int image::masked_pixel(uint ind){
 		return  (((int)buffer[ind + 3]) << 24) |
 				(((int)buffer[ind + 0]) << 16) |
 				(((int)buffer[ind + 1]) << 8) |
