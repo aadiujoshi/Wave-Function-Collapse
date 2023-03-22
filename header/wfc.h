@@ -15,7 +15,7 @@ namespace gen {
 
     typedef struct _tile tile;
     typedef struct _tile {
-        //the id of this tile
+        //the id of this tile, is also the original index of the sample img
         uint t_id;
 
         //possible adjacent tile IDs
@@ -45,7 +45,10 @@ namespace gen {
         graphics::image& output_image;
 
         tile* sample_tiles;
+        uint st_length; 
+
         tile* output_tiles;
+        uint ot_length; 
 
         const uint seed;
     public:

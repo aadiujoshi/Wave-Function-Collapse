@@ -8,17 +8,15 @@ namespace gen{
     
     wfc::wfc(graphics::image& sample_image, graphics::image& output_image, const uint seed) : 
         sample_image(sample_image), output_image(output_image), seed(seed){
+        
+        uint rswidth = sample_image.get_width() / 4;
+        uint rsheight = sample_image.get_height() / 4;
 
-        sample_tiles.height = (sample_image.get_height()-2)/4;
-        sample_tiles.width = (sample_image.get_width()-2)/4;
+        st_length = (rswidth - 2) * (rsheight - 2);
+        ot_length = (output_image.get_width() / 4 - 2) * (output_image.get_width() / 4 - 2);
 
-        output_tiles.height = (output_image.get_height()-2)/4;
-        output_tiles.width = (output_image.get_width()-2)/4;
-
-        sample_tiles.tiles = (tile*)malloc(sizeof(tile) * (sample_tiles.width-2) * (sample_tiles.height-2));
-        output_tiles.tiles = (tile*)malloc(sizeof(tile) * (output_tiles.width-2) * (output_tiles.height-2));
-
-        tile* s_tiles = sample_tiles.tiles;
+        sample_tiles = (tile*)malloc(sizeof(tile) * st_length);
+        output_tiles = (tile*)malloc(sizeof(tile) * ot_length);
 
         //init sample_tiles
 
@@ -26,19 +24,23 @@ namespace gen{
         // translate to 1D: (x + 1) + width * (y + 1) (rel)
         // subtract x and y by 1 to get sample_tiles index
 
-        for (size_t x = 1; x < sample_image.get_width() - 1; x++) {
-            for (size_t y = 1; y < sample_image.get_height() - 1; y++) {
+        st_ind = 0;
 
-                uint t_i = (x - 1) + (sample_tiles.width) * (y - 1);
+        for (size_t x = 1; x < rswidth - 1; x++) {
+            for (size_t y = 1; y < rsheight - 1; y++) {
 
-                tile& t = s_tiles[t_i];
+                uint t_i = x + rswidth * y;
+
+                tile& t = s_tiles[st_ind];
                 t.t_id = t_i;
 
                 for (int rx = -1; rx <= 1; rx++) {
                     for (int ry = -1; ry <= 1; ry++) {
-                        t.adj_constraints[(rx + 1) + 3 * (ry + 1)] = 1;
+                        uint t_i2 = (x + rx) + rswidth * (y + ry);
+                        t.adj_constraints[(rx + 1) + 3 * (ry + 1)] = t_i2;
                     }
                 }
+                st_ind++;
             }
         }
 
@@ -49,7 +51,6 @@ namespace gen{
     }
 
     void wfc::next_collapse(){
-
         //FIND LOWEST ENTROPY TILE
         //COLLAPSE CHOSEN TILE AND CONSTRAINT WITH OTHER TILES
         
