@@ -56,7 +56,7 @@ namespace graphics {
 	}
 
 	int image::masked_pixel(uint x, uint y) const {
-		return masked_pixel(x + y * width);
+		return masked_pixel((x * 4) + (y * 4) * width);
 	}
 
 	int image::masked_pixel(uint ind) const {
@@ -96,5 +96,4 @@ namespace graphics {
 	void texture::unbind() const {
 		glCall(glBindTexture(GL_TEXTURE_2D, 0));
 	}
-
 }

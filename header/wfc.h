@@ -9,8 +9,6 @@
 #define uchar unsigned char
 #define rand_f() (rand()/RAND_MAX);
 
-#define samp_img_to_samp_tile_ind(x, y, sample_tiles_width) (x - 1) + (sample_tiles_width) * (y - 1)
-
 namespace gen {
 
     //https://www.gridbugs.org/wave-function-collapse/
@@ -40,26 +38,14 @@ namespace gen {
         };
 
     } tile;
-
-    typedef struct _tile_image tile_image;
-    typedef struct _tile_image {
-        tile* tiles;
-        uint width;
-        uint height;
-
-        static int tile_at(const tile_image& ti, uint x, uint y) {
-            ti.tiles[x + y * ti.width];
-        };
-
-    } tile_image;
-
+    
     class wfc {
     private:
         graphics::image& sample_image;
         graphics::image& output_image;
 
-        tile_image sample_tiles;
-        tile_image output_tiles;
+        tile* sample_tiles;
+        tile* output_tiles;
 
         const uint seed;
     public:
