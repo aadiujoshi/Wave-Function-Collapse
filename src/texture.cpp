@@ -43,7 +43,7 @@ namespace graphics {
 	}
 
 	image::~image() {
-
+		free(buffer);
 	}
 
 	void image::print() const {
@@ -59,7 +59,7 @@ namespace graphics {
 		return masked_pixel(x + y * width);
 	}
 
-	int image::masked_pixel(uint ind){
+	int image::masked_pixel(uint ind) const {
 		return  (((int)buffer[ind + 3]) << 24) |
 				(((int)buffer[ind + 0]) << 16) |
 				(((int)buffer[ind + 1]) << 8) |

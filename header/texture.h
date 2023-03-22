@@ -12,6 +12,7 @@
 #define uchar unsigned char
 
 namespace graphics {
+
 	class image {
 	private:
 		uchar* buffer;
@@ -24,6 +25,7 @@ namespace graphics {
 		void print() const;
 
 		int masked_pixel(uint x, uint y) const;
+		int masked_pixel(uint ind) const;
 
 		inline uint get_width() const {
 			return width;
