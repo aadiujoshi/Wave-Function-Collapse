@@ -38,7 +38,8 @@ namespace gen{
         srand(seed);
 
         //init output tiles, and add random tile
-        output_tiles.tiles = (tile*)malloc(sizeof(tile) * (output_image.get_width()/4) * (output_image.get_height() / 4));
+        output_tiles.tiles = (tile*)malloc(sizeof(tile) * (output_image.get_width() / 4) * (output_image.get_height() / 4));
+        output_tiles.tiles[0] = rand_f() * st_length;
     }
 
     wfc::~wfc() {
@@ -46,12 +47,19 @@ namespace gen{
 
     void wfc::next_collapse(){
         //FIND LOWEST ENTROPY TILE
-        //COLLAPSE CHOSEN TILE AND CONSTRAINT WITH OTHER TILES
-
         float lowest_entropy = 1;
-        float lowest_entropy_t_id = 1;
+        float lowest_entropy_t_id = 0;
+
         for (size_t i = 0; i < st_length; i++) {
-            
+            float entropy = tile::calc_entropy(sample_tiles[i]);
+
+            if(entropy < lowest_entropy){
+                lowest_entropy_t_id = i;
+                lowest_entropy = entropy;
+            }
         }
+
+        //COLLAPSE CHOSEN TILE AND CONSTRAINT WITH OTHER TILES
+        
     }
 }
