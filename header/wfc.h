@@ -25,6 +25,10 @@ namespace gen {
             return tl.adj_constraints[(1 + x_rel) + 3 * (1 + y_rel)];
         };
 
+        static uint get_samp_tile_index(const tile& tl) {
+            return tl.adj_constraints[0];
+        };
+
         //take the 3x3 adj tile area, 5th index is skipped
         static float calc_entropy(const tile& tl, uint* output_adj) {
             float fit = 0;
@@ -39,6 +43,17 @@ namespace gen {
 
     } tile;
     
+    typedef struct _tile_image tile_image;
+    typedef struct _tile_image {
+        tile* tiles;
+        uint width;
+        uint height;
+
+        static tile* get_adj(const tile_image& ti, uint x, uint y) {
+            return &ti.tiles[(x - 1) + ti.width * (y - 1)];
+        }
+    };
+
     class wfc {
     private:
         graphics::image& sample_image;
@@ -47,8 +62,7 @@ namespace gen {
         tile* sample_tiles;
         uint st_length; 
 
-        tile* output_tiles;
-        uint ot_length; 
+        tile_image output_tiles;
 
         const uint seed;
     public:
