@@ -39,23 +39,28 @@ namespace gen{
 
         //init output tiles, and add random tile
         output_tiles.tiles = (tile*)malloc(sizeof(tile) * (output_image.get_width() / 4) * (output_image.get_height() / 4));
-        output_tiles.tiles[0] = rand_f() * st_length;
+        output_tiles.tiles[0] = sample_tiles[(int)(rand_f() * st_length)];
+
     }
 
     wfc::~wfc() {
     }
 
     void wfc::next_collapse(){
-        //FIND LOWEST ENTROPY TILE
+        //FIND LOWEST ENTROPY TILE IN OUTPUT
         float lowest_entropy = 1;
         float lowest_entropy_t_id = 0;
 
-        for (size_t i = 0; i < st_length; i++) {
-            float entropy = tile::calc_entropy(sample_tiles[i]);
+        tile** adj_local = (tile**)_alloca(sizeof(tile*) * 9);
 
-            if(entropy < lowest_entropy){
-                lowest_entropy_t_id = i;
-                lowest_entropy = entropy;
+        for (size_t x = 0; x < output_tiles.width; x++) {
+            for (size_t y = 0; y < output_tiles.height; y++) {
+
+                tile* tl = tile_image::tile_at(output_tiles, x, y);
+
+                if (tl == nullptr) continue;
+
+                float entropy = tile::calc_entropy(tl, adj_local);
             }
         }
 
