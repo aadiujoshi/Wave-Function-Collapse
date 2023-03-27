@@ -69,6 +69,8 @@ namespace wfc {
 
                 tile* pt = composite[i].p_tiles;
 
+                varargs["sample_tiles"] = (void*)(pt);
+
                 for (size_t j = 0; j < count; j++) {
                     switch (impl) {
                         case SUDOKU_CONSTRAINT:{

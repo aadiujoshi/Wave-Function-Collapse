@@ -80,7 +80,7 @@ namespace wfc {
 
         class proximity_constraint : public constraint {
         private:
-            tile* prox;
+            uint[9] prox;
         public:
             proximity_constraint(std::unordered_map<std::string, void*> varargs);
         };
