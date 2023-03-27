@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\constraint.cpp" />
     <ClCompile Include="src\gutil.cpp" />
     <ClCompile Include="src\index_buffer.cpp" />
     <ClCompile Include="src\main.cpp" />

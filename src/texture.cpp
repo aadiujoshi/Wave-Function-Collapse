@@ -56,14 +56,14 @@ namespace graphics {
 	}
 
 	int image::masked_pixel(uint x, uint y) const {
-		return masked_pixel((x * 4) + (y * 4) * width);
+		return masked_pixel(x + y * width);
 	}
 
 	int image::masked_pixel(uint ind) const {
-		return  (((int)buffer[ind + 3]) << 24) |
-				(((int)buffer[ind + 0]) << 16) |
-				(((int)buffer[ind + 1]) << 8) |
-				((int)buffer[ind + 2]);
+		return  (((int)buffer[ind*4 + 3]) << 24) |
+				(((int)buffer[ind*4 + 0]) << 16) |
+				(((int)buffer[ind*4 + 1]) << 8) |
+				((int)buffer[ind*4 + 2]);
 	}
 
 	texture::texture(const std::string& file) : image(file){
