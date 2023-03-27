@@ -4,19 +4,19 @@
 
 namespace wfc {
 
-    wfc::wfc(graphics::image& sample_image, graphics::image& output_image, const uint seed)
-        : sample_image(sample_image), output_image(output_image), seed(seed), output_tiles(0){
+    wfc::wfc(graphics::image& sample_image, graphics::image& output_image, const CONSTRAINT_IMPL impl, const uint seed)
+        : sample_image(sample_image), output_image(output_image), seed(seed) {
 
         uint srwidth = sample_image.get_width() / 4;
         uint srheight = sample_image.get_height() / 4;
 
         sample_tiles = static_cast<gen::tile*>(operator new[](sizeof(gen::tile) * srwidth * srheight));
-
+        
         for (size_t i = 0; i < srwidth * srheight; i++) {
             new (sample_tiles + i) gen::tile(i % srwidth, (uint)(i / srwidth), sample_image.masked_pixel(i));
         }
 
-        output_tiles = new gen::tile_superpositions(sample_tiles, srwidth, srheight, output_image.get_width() / 4, output_image.get_height() / 4);
+        output_tiles = new gen::tile_superpositions(sample_tiles, impl, srwidth, srheight, output_image.get_width() / 4, output_image.get_height() / 4);
     };
 
     wfc::~wfc() {
@@ -25,15 +25,15 @@ namespace wfc {
 
     void wfc::next() {
         
-        uint lowest_entropy_loc;
-        uint lowest_entropy = 0;
+        uint lowest_entropy_loc = 0;
+        uint lowest_entropy = 1;
         //find lowest entropy
-        for (size_t i = 0; i < output_tiles.width * output_tiles.height; i++) {
-            if (output_tiles.at(i).entropy() < output_tiles.at(lowest_entropy_loc).entropy())
-                lowest_entropy = output_tiles.at(i).entropy();
+        for (size_t i = 0; i < output_tiles->width * output_tiles->height; i++) {
+            if (output_tiles->at(i).entropy() < lowest_entropy)
+                lowest_entropy = output_tiles->at(i).entropy();
         }
 
-        gen::tile* collapsed_ = output_tiles.composite[lowest_entropy_loc].collapse();
+        gen::tile* collapsed_ = output_tiles->composite[lowest_entropy_loc].collapse();
         collapsed_->constraint->propagate(output_tiles);
     }
 
@@ -49,19 +49,36 @@ namespace wfc {
         //============================================================================================================
         //============================================================================================================
 
-        tile_superpositions::tile_superpositions() {}
+        tile_superpositions::tile_superpositions(int ignore) {};
 
-        tile_superpositions::tile_superpositions(tile* sample_tiles, uint sample_width, uint sample_height, uint output_width, uint output_height)
+        tile_superpositions::tile_superpositions(tile* sample_tiles, const CONSTRAINT_IMPL impl, uint sample_width, uint sample_height, uint output_width, uint output_height)
             : width(output_width), height(output_height) {
 
             composite = static_cast<superposition*>(operator new[](sizeof(superposition) * output_width * output_height));
 
             uint count = sample_width * sample_height;
 
+            std::unordered_map <std::string, void*> varargs;
+            varargs["sample_width"] = (void*)(&sample_width);
+            varargs["sample_height"] = (void*)(&sample_height);
+
             for (size_t i = 0; i < output_width * output_height; i++) {
                 tile* u_sample_copy = static_cast<tile*>(operator new[](sizeof(tile) * count));
                 memcpy(u_sample_copy, sample_tiles, sizeof(tile) * count);
                 new (composite + i) superposition(sample_tiles, count, i % output_width, (uint)(i / output_width));
+
+                tile* pt = composite[i].p_tiles;
+
+                for (size_t j = 0; j < count; j++) {
+                    switch (impl) {
+                        case SUDOKU_CONSTRAINT:{
+                            pt[j].constraint = new sudoku_constraint(varargs);
+                        }
+                        case PROXIMITY_CONSTRAINT: {
+                            pt[j].constraint = new proximity_constraint(varargs);
+                        }
+                    }
+                }
             }
         };
 
@@ -73,7 +90,7 @@ namespace wfc {
             this[y][x]->remove(signature); 
         };
 
-        superposition *tile_superpositions::operator[](uint row) {
+        superposition* tile_superpositions::operator[](uint row) {
             return composite + (row * width);
         };
 

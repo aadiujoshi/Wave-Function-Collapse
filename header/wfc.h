@@ -10,6 +10,10 @@
 #define uchar unsigned char
 #define rand_f() (rand()/(float)RAND_MAX)
 
+#define CONSTRAINT_IMPL int
+#define PROXIMITY_CONSTRAINT 0
+#define SUDOKU_CONSTRAINT 1
+
 class wfc::gen::constraint;
 class wfc::gen::superposition;
 class wfc::gen::tile_superpositions;
@@ -26,11 +30,11 @@ namespace wfc {
         gen::tile* sample_tiles;
         uint st_length;
 
-        gen::tile_superpositions& output_tiles;
+        gen::tile_superpositions* output_tiles;
 
         const uint seed;
     public:
-        wfc(graphics::image& sample_image, graphics::image& output_image, const uint seed);
+        wfc(graphics::image& sample_image, graphics::image& output_image, const CONSTRAINT_IMPL impl, const uint seed);
         ~wfc();
 
         void next();
@@ -71,7 +75,7 @@ namespace wfc {
             const tile* owner;
         public:
             constraint(std::unordered_map<std::string, void*> varargs);  
-            void propagate(tile_superpositions& tiles);
+            virtual void propagate(tile_superpositions* tiles);
         };
 
         class proximity_constraint : public constraint {
@@ -84,7 +88,7 @@ namespace wfc {
         class sudoku_constraint : public constraint {
         public:
             sudoku_constraint(std::unordered_map<std::string, void*> varargs);
-            void propagate(tile_superpositions& tiles) override;
+            void propagate(tile_superpositions* tiles) override;
         };
 
         //============================================================================================================
@@ -119,8 +123,8 @@ namespace wfc {
             uint width;
             uint height;
 
-            tile_superpositions();
-            tile_superpositions(tile* sample_tiles, uint sample_width, uint sample_height, uint output_width, uint output_height);
+            tile_superpositions(int ignore);
+            tile_superpositions(tile* sample_tiles, const CONSTRAINT_IMPL impl, uint sample_width, uint sample_height, uint output_width, uint output_height);
             ~tile_superpositions();
 
             void remove_at(uint signature, uint x, uint y);
