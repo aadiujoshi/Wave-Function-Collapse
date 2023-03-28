@@ -14,33 +14,12 @@
 #define PROXIMITY_CONSTRAINT 0
 #define SUDOKU_CONSTRAINT 1
 
-class wfc::gen::constraint;
-class wfc::gen::superposition;
-class wfc::gen::tile_superpositions;
-class wfc::gen::proximity_constraint;
-class wfc::gen::sudoku_constraint;
-
 namespace wfc {
 
-    class wfc {
-    private:
-        graphics::image& sample_image;
-        graphics::image& output_image;
-
-        gen::tile* sample_tiles;
-        uint st_length;
-
-        gen::tile_superpositions* output_tiles;
-
-        const uint seed;
-    public:
-        wfc(graphics::image& sample_image, graphics::image& output_image, const CONSTRAINT_IMPL impl, const uint seed);
-        ~wfc();
-
-        void next();
-    };
-
     namespace gen {
+        class constraint;
+        class superposition;
+        class tile_superpositions;
 
         //============================================================================================================
         //============================================================================================================
@@ -50,7 +29,7 @@ namespace wfc {
         public:
             constraint* constraint;
 
-            float signature;
+            uint signature;
             bool enabled = true;
 
             //the original location
@@ -75,14 +54,15 @@ namespace wfc {
             const tile* owner;
         public:
             constraint(std::unordered_map<std::string, void*> varargs);  
-            virtual void propagate(tile_superpositions* tiles);
+            virtual void propagate(tile_superpositions* tiles) = 0;
         };
 
         class proximity_constraint : public constraint {
         private:
-            uint[9] prox;
+            uint prox[9];
         public:
             proximity_constraint(std::unordered_map<std::string, void*> varargs);
+            void propagate(tile_superpositions* tiles) override;
         };
 
         class sudoku_constraint : public constraint {
@@ -107,6 +87,7 @@ namespace wfc {
 
             //SUPPLIED TILES MUST BE OF CONTIGUOUS MEMORY and unique copies of original sample_tiles
             superposition(tile* tiles, uint count, uint x, uint y);
+            ~superposition();
             void remove(uint signature);
             float entropy();
             tile* collapse();
@@ -134,4 +115,22 @@ namespace wfc {
 
         };
     }
+
+    class wfc {
+    private:
+        graphics::image& sample_image;
+        graphics::image& output_image;
+
+        gen::tile* sample_tiles;
+
+        gen::tile_superpositions* output_tiles;
+
+        const uint seed;
+    public:
+        wfc(graphics::image& sample_image, graphics::image& output_image, const CONSTRAINT_IMPL impl, const uint seed);
+        ~wfc();
+
+        void next();
+    };
+
 }

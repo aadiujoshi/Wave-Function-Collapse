@@ -7,8 +7,8 @@ namespace wfc {
     wfc::wfc(graphics::image& sample_image, graphics::image& output_image, const CONSTRAINT_IMPL impl, const uint seed)
         : sample_image(sample_image), output_image(output_image), seed(seed) {
 
-        uint srwidth = sample_image.get_width() / 4;
-        uint srheight = sample_image.get_height() / 4;
+        uint srwidth = sample_image.get_width();
+        uint srheight = sample_image.get_height();
 
         sample_tiles = static_cast<gen::tile*>(operator new[](sizeof(gen::tile) * srwidth * srheight));
         
@@ -16,17 +16,17 @@ namespace wfc {
             new (sample_tiles + i) gen::tile(i % srwidth, (uint)(i / srwidth), sample_image.masked_pixel(i));
         }
 
-        output_tiles = new gen::tile_superpositions(sample_tiles, impl, srwidth, srheight, output_image.get_width() / 4, output_image.get_height() / 4);
+        output_tiles = new gen::tile_superpositions(sample_tiles, impl, srwidth, srheight, output_image.get_width(), output_image.get_height());
     };
 
     wfc::~wfc() {
-        delete[] sample_tiles;
+
     };
 
     void wfc::next() {
         
         uint lowest_entropy_loc = 0;
-        uint lowest_entropy = 1;
+        float lowest_entropy = 1;
         //find lowest entropy
         for (size_t i = 0; i < output_tiles->width * output_tiles->height; i++) {
             if (output_tiles->at(i).entropy() < lowest_entropy)
@@ -39,8 +39,10 @@ namespace wfc {
 
     namespace gen {
 
+        static uint available_sig = 0;
+
         tile::tile(uint sample_x, uint sample_y, int pixel_val) 
-            :   signature(rand_f()), 
+            :   signature(available_sig++),
                 sample_x(sample_x), 
                 sample_y(sample_y), 
                 pixel_val(pixel_val) {}

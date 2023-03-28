@@ -16,7 +16,11 @@
 
 namespace graphics {
 
-	image::image(const std::string& file) : buffer(nullptr), width(0), height(0), bpp(0), filepath(file){
+	image::image(uint width, uint height) : width(width), height(height), bpp(4) {
+		buffer = static_cast<uchar*>(operator new[](width * height * 16));
+	}
+
+	image::image(const std::string& file) : buffer(nullptr), width(0), height(0), bpp(4), filepath(file){
 		std::vector<uchar> tbuffer;
 
 		uint error = lodepng::decode(tbuffer, width, height, file);
@@ -43,7 +47,7 @@ namespace graphics {
 	}
 
 	image::~image() {
-		free(buffer);
+
 	}
 
 	void image::print() const {
@@ -66,7 +70,7 @@ namespace graphics {
 				((int)buffer[ind*4 + 2]);
 	}
 
-	texture::texture(const std::string& file) : image(file){
+	void texture::_init_texture() {
 		glCall(glGenTextures(1, &id));
 		glCall(glBindTexture(GL_TEXTURE_2D, id));
 
@@ -79,7 +83,19 @@ namespace graphics {
 
 		glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, get_width(), get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buff));
 		glCall(glBindTexture(GL_TEXTURE_2D, 0));
+	}
 
+	texture::texture(const std::string& file) 
+		: image(file) {
+		_init_texture();
+	}
+
+	texture::texture(uint width, uint height)
+		: image(width, height){
+		_init_texture();
+		for (size_t i = 0; i < width * height * 16; i++) {
+			get_buffer()[i] = 255;
+		}
 	}
 
 	texture::~texture() {

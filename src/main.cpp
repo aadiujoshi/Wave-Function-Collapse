@@ -80,6 +80,7 @@ int main() {
 
         graphics::shader shader("shader/generic_shader");
         graphics::texture texture("resources/testing.png");
+        graphics::texture output(100, 100);
         texture.bind();
         shader.set_1i("u_texture", 0);
 

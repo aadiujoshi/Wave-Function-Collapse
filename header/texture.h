@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <lodepng.h>
 #include <vector>
@@ -20,6 +22,7 @@ namespace graphics {
 		std::string filepath;
 	public:
 		image(const std::string& file);
+		image(uint width, uint height);
 		~image();
 
 		void print() const;
@@ -43,9 +46,11 @@ namespace graphics {
 
 	class texture : public image {
 	private:
+		void _init_texture();
 		uint id;
 	public:
 		texture(const std::string& file);
+		texture(uint width, uint height);
 		~texture();
 
 		void bind(uint slot = 0) const;
