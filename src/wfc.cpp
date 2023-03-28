@@ -126,6 +126,13 @@ namespace wfc {
             }
         };
 
+        void superposition::remove_not(uint signature) {
+            for (size_t i = 0; i < count; i++) {
+                if (p_tiles[i].signature != signature)
+                    p_tiles[i].enabled = false;
+            }
+        };
+
         float superposition::entropy() {
             float e = 0;
 

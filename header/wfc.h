@@ -72,7 +72,7 @@ namespace wfc {
 
         class constraint {
         protected:
-            const tile* owner;
+            tile* owner;
         public:
             constraint(std::unordered_map<std::string, void*> varargs);  
             virtual void propagate(tile_superpositions* tiles);
@@ -91,6 +91,17 @@ namespace wfc {
             void propagate(tile_superpositions* tiles) override;
         };
 
+        class pixel_constraint: public constraint {
+        private:
+            uint* p_up;
+            uint* p_down;
+            uint* p_left;
+            uint* p_right;
+        public:
+            pixel_constraint(std::unordered_map<std::string, void*> varargs);
+            void propagate(tile_superpositions* tiles) override;
+        }
+
         //============================================================================================================
         //============================================================================================================
         //============================================================================================================
@@ -108,6 +119,7 @@ namespace wfc {
             //SUPPLIED TILES MUST BE OF CONTIGUOUS MEMORY and unique copies of original sample_tiles
             superposition(tile* tiles, uint count, uint x, uint y);
             void remove(uint signature);
+            void remove_not(uint signature);
             float entropy();
             tile* collapse();
         };
