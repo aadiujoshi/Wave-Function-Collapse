@@ -74,8 +74,8 @@ namespace graphics {
 		glCall(glGenTextures(1, &id));
 		glCall(glBindTexture(GL_TEXTURE_2D, id));
 
-		glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-		glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+		glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 		glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 		glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
@@ -93,8 +93,10 @@ namespace graphics {
 	texture::texture(uint width, uint height)
 		: image(width, height){
 		_init_texture();
+
 		for (size_t i = 0; i < width * height * 16; i++) {
-			get_buffer()[i] = 255;
+			if(i % 4 == 0)
+				get_buffer()[i] = (uchar)255;
 		}
 	}
 
@@ -111,5 +113,11 @@ namespace graphics {
 
 	void texture::unbind() const {
 		glCall(glBindTexture(GL_TEXTURE_2D, 0));
+	}
+
+	void texture::pixel_update() {
+		bind();
+		glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, get_width(), get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, get_buffer()));
+		unbind();
 	}
 }

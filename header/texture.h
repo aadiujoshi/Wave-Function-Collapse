@@ -55,5 +55,7 @@ namespace graphics {
 
 		void bind(uint slot = 0) const;
 		void unbind() const;
+
+		void pixel_update();
 	};
 }

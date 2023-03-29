@@ -51,8 +51,6 @@ namespace wfc {
         //============================================================================================================
         //============================================================================================================
 
-        tile_superpositions::tile_superpositions(int ignore) {};
-
         tile_superpositions::tile_superpositions(tile* sample_tiles, const CONSTRAINT_IMPL impl, uint sample_width, uint sample_height, uint output_width, uint output_height)
             : width(output_width), height(output_height) {
 
@@ -74,12 +72,15 @@ namespace wfc {
                 varargs["sample_tiles"] = (void*)(pt);
 
                 for (size_t j = 0; j < count; j++) {
+                    varargs["owner"] = (void*)(pt + j);
                     switch (impl) {
-                        case SUDOKU_CONSTRAINT:{
+                        case SUDOKU_CONSTRAINT: {
                             pt[j].constraint = new sudoku_constraint(varargs);
+                            break;
                         }
                         case PROXIMITY_CONSTRAINT: {
                             pt[j].constraint = new proximity_constraint(varargs);
+                            break;
                         }
                     }
                 }

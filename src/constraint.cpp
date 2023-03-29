@@ -36,8 +36,6 @@ namespace wfc {
 
 		proximity_constraint::proximity_constraint(std::unordered_map<std::string, void*> varargs)
 			: constraint(varargs){
-			
-			prox = static_cast<uint*>(operator new[](sizeof(uint) * 9));
 
 			tile* st = static_cast<tile*>(varargs["sample_tiles"]);
 			uint stw = *(static_cast<uint*>(varargs["sample_width"]));
@@ -53,9 +51,12 @@ namespace wfc {
 
 		void proximity_constraint::propagate(tile_superpositions* tiles) {
 			int i = 0;
+
+			tile_superpositions tiles_ = *tiles;
+
 			for(int x = -1 + owner->x; x <= 1; x++){
 				for(int y = -1 + owner->y; y <= 1; y++){
-					tiles->[y][x].remove_not(prox[i]);
+					tiles_[y][x].remove_not(prox[i]);
 					i++;
 				}
 			}
@@ -65,7 +66,7 @@ namespace wfc {
 		//============================================================================================================
 		//============================================================================================================
 
-		pixel_constraint::pixel_constraint(std::std::unordered_map<std::string, void*> varargs)
+		/*pixel_constraint::pixel_constraint(std::std::unordered_map<std::string, void*> varargs)
 			: constraint(varargs) {
 			
 			std::vector<uint> up;
@@ -73,6 +74,6 @@ namespace wfc {
 			std::vector<uint> left;
 			std::vector<uint> right;
 
-		}
+		}*/
 	}
 }

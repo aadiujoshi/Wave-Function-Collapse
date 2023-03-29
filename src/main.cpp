@@ -34,7 +34,14 @@ int main() {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        window = glfwCreateWindow(1920, 1080, "window", NULL, NULL);
+        GLFWmonitor* primary = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(primary);
+        const int screen_width = mode->width;
+        const int screen_height = mode->height;
+
+        std::cout << "Screen resolution: " << screen_width << "x" << screen_height << std::endl;
+
+        window = glfwCreateWindow(screen_width, screen_height, "window", NULL, NULL);
         if (!window) {
             glfwTerminate();
             return -3;
@@ -56,11 +63,23 @@ int main() {
         //-------------------------------------------------------------------------------------
         //-------------------------------------------------------------------------------------
 
-        float rect_vertex[] = {
-            0.5f, 0.5f, 1.0f, 1.0f,
-            0.5f, -0.5f, 1.0f, 0.0,
-            -0.5f, 0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.0f, 0.0f
+
+        const float _offset_x_1 = -0.5f;
+        const float _sq_size_1 = 0.3f;
+        float sample_va[] = {
+            _sq_size_1 + _offset_x_1, _sq_size_1, 1.0f, 1.0f,
+            _sq_size_1 + _offset_x_1, -_sq_size_1, 1.0f, 0.0,
+            -_sq_size_1 + _offset_x_1, _sq_size_1, 0.0f, 1.0f,
+            -_sq_size_1 + _offset_x_1, -_sq_size_1, 0.0f, 0.0f
+        };
+
+        const float _offset_x_2 = 0.5f;
+        const float _sq_size_2 = 0.3f;
+        float output_va[] = {
+            _sq_size_2 + _offset_x_2, _sq_size_2, 1.0f, 1.0f,
+            _sq_size_2 + _offset_x_2, -_sq_size_2, 1.0f, 0.0,
+            -_sq_size_2 + _offset_x_2, _sq_size_2, 0.0f, 1.0f,
+            -_sq_size_2 + _offset_x_2, -_sq_size_2, 0.0f, 0.0f
         };
 
         uint rect_indices[] = {
@@ -70,18 +89,27 @@ int main() {
         glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
         glCall(glEnable(GL_BLEND));
 
+        //input texture stuff
         graphics::vertex_array vao;
-        graphics::vertex_buffer vbo(rect_vertex, sizeof(rect_vertex));
+        graphics::vertex_buffer vbo(sample_va, sizeof(sample_va));
         vbo.add_layout({ GL_FLOAT, 2, GL_FALSE });
         vbo.add_layout({ GL_FLOAT, 2, GL_FALSE });
         vao.add_buffer(vbo);
+
+        //output texture stuff
+        graphics::vertex_array vao_out;
+        graphics::vertex_buffer vbo_out(output_va, sizeof(output_va));
+        vbo_out.add_layout({ GL_FLOAT, 2, GL_FALSE });
+        vbo_out.add_layout({ GL_FLOAT, 2, GL_FALSE });
+        vao_out.add_buffer(vbo_out);
+
         graphics::index_buffer ibo(rect_indices, ARRLENGTH(rect_indices, uint));
         graphics::renderer renderer;
-
         graphics::shader shader("shader/generic_shader");
-        graphics::texture texture("resources/testing.png");
-        graphics::texture output(100, 100);
-        texture.bind();
+
+        graphics::texture texture("C:/Users/aadiu/Desktop/Programming Files/Personal Projects/Java Projects/Summit Game/Summit/resources/sprites/apple-item.png");
+        graphics::texture output(400, 400);
+
         shader.set_1i("u_texture", 0);
 
         UNBIND_ALL();
@@ -94,11 +122,19 @@ int main() {
 
             renderer.clear();
 
-            /*shader.set_4f("u_color", (float)(rand() / (RAND_MAX * 1.0f)),
-                (float)(rand() / (RAND_MAX * 1.0f)),
-                (float)(rand() / (RAND_MAX * 1.0f)), 1);*/
-
+            texture.bind();
             renderer.draw(vao, ibo, shader);
+
+            output.bind();
+
+            //int ind_r = (1.0f * rand() / RAND_MAX) * output.get_width() * output.get_height() * 16;
+            //std::cout << ind_r << std::endl;
+            //output.get_buffer()[ind_r] = 255;
+            //output.get_buffer()[ind_r+1] = 0;
+            //output.get_buffer()[ind_r+2] = 0;
+            //output.get_buffer()[ind_r+3] = 255;
+
+            renderer.draw(vao_out, ibo, shader);
 
             glfwSwapBuffers(window);
 

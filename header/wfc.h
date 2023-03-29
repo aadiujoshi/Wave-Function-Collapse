@@ -71,7 +71,7 @@ namespace wfc {
             void propagate(tile_superpositions* tiles) override;
         };
 
-        class pixel_constraint: public constraint {
+        class pixel_constraint : public constraint {
         private:
             uint* p_up;
             uint* p_down;
@@ -80,7 +80,7 @@ namespace wfc {
         public:
             pixel_constraint(std::unordered_map<std::string, void*> varargs);
             void propagate(tile_superpositions* tiles) override;
-        }
+        };
 
         //============================================================================================================
         //============================================================================================================
