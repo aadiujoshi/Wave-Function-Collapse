@@ -4,7 +4,7 @@
 
 namespace wfc {
 
-    wfc::wfc(graphics::image& sample_image, graphics::image& output_image, const CONSTRAINT_IMPL impl, const uint seed)
+    wfc::wfc(graphics::texture& sample_image, graphics::texture& output_image, const CONSTRAINT_IMPL impl, const uint seed)
         : sample_image(sample_image), output_image(output_image), seed(seed) {
 
         uint srwidth = sample_image.get_width();

@@ -130,8 +130,8 @@ namespace wfc {
 
     class wfc {
     private:
-        graphics::image& sample_image;
-        graphics::image& output_image;
+        graphics::texture& sample_image;
+        graphics::texture& output_image;
 
         gen::tile* sample_tiles;
 
@@ -139,7 +139,7 @@ namespace wfc {
 
         const uint seed;
     public:
-        wfc(graphics::image& sample_image, graphics::image& output_image, const CONSTRAINT_IMPL impl, const uint seed);
+        wfc(graphics::texture& sample_image, graphics::texture& output_image, const CONSTRAINT_IMPL impl, const uint seed);
         ~wfc();
 
         void next();

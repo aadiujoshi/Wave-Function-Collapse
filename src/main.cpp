@@ -19,6 +19,8 @@
 #define uint unsigned int
 #define timeNs() std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count()
 
+static long long i;
+
 int main() {
     {
         GLFWwindow* window;
@@ -126,15 +128,16 @@ int main() {
             renderer.draw(vao, ibo, shader);
 
             output.bind();
-
-            //int ind_r = (1.0f * rand() / RAND_MAX) * output.get_width() * output.get_height() * 16;
-            //std::cout << ind_r << std::endl;
-            //output.get_buffer()[ind_r] = 255;
-            //output.get_buffer()[ind_r+1] = 0;
-            //output.get_buffer()[ind_r+2] = 0;
-            //output.get_buffer()[ind_r+3] = 255;
-
             renderer.draw(vao_out, ibo, shader);
+
+            //uint ind_r = (1.0f * rand() / RAND_MAX) * output.get_width() * output.get_height();
+
+            //std::cout << "x: " << (uint)(ind_r % output.get_width()) << " y: " << (uint)(ind_r / output.get_width()) << std::endl;
+
+            //output.set_rgba((uint)(ind_r % output.get_width()), (uint)(ind_r / output.get_width()), 0, 255, 0, 255);
+
+            //output.set_rgba(0, 0, 0, 0, 0, 0);
+
 
             glfwSwapBuffers(window);
 

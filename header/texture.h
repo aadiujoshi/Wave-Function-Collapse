@@ -20,6 +20,10 @@ namespace graphics {
 		uchar* buffer;
 		uint width, height, bpp;
 		std::string filepath;
+	protected:
+		inline void set_buffer(uchar* buff) {
+			buffer = buff;
+		};
 	public:
 		image(const std::string& file);
 		image(uint width, uint height);
@@ -29,7 +33,7 @@ namespace graphics {
 
 		int masked_pixel(uint x, uint y) const;
 		int masked_pixel(uint ind) const;
-
+		
 		inline uint get_width() const {
 			return width;
 		};
@@ -53,9 +57,9 @@ namespace graphics {
 		texture(uint width, uint height);
 		~texture();
 
+		void set_rgba(uint x, uint y, uchar r, uchar g, uchar b, uchar a);
+
 		void bind(uint slot = 0) const;
 		void unbind() const;
-
-		void pixel_update();
 	};
 }

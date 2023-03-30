@@ -17,7 +17,7 @@
 namespace graphics {
 
 	image::image(uint width, uint height) : width(width), height(height), bpp(4) {
-		buffer = static_cast<uchar*>(operator new[](width * height * 16));
+		buffer = static_cast<uchar*>(operator new[](sizeof(uchar) * width * height * 4));
 	}
 
 	image::image(const std::string& file) : buffer(nullptr), width(0), height(0), bpp(4), filepath(file){
@@ -33,7 +33,7 @@ namespace graphics {
 		std::cout << "successfully loaded png: " << file << ": width: " << width << " : height: " << height << "\n";
 
 		//tbuffer is stack allocated so you cant copy the pointer since it is freed with the stack
-		buffer = (uchar*)malloc(sizeof(uchar) * tbuffer.size());
+		buffer = static_cast<uchar*>(operator new[](sizeof(uchar) * tbuffer.size()));
 		
 		//copy stack buffer to heap
 
@@ -51,7 +51,7 @@ namespace graphics {
 	}
 
 	void image::print() const {
-		for (size_t i = 0; i < width*height*16; i += 4) {
+		for (size_t i = 0; i < width*height*4; i += 4) {
 			std::cout << "at: [" << ((i / 4) % width) << ", " << ((i / 4) / width) << 
 				"] : red: " << (uint)buffer[i] <<
 				" green: " << (uint)buffer[i + 1] <<
@@ -82,7 +82,13 @@ namespace graphics {
 		uchar* buff = get_buffer();
 
 		glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, get_width(), get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buff));
+
+		glCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, buff));
+
+		set_buffer(buff);
+
 		glCall(glBindTexture(GL_TEXTURE_2D, 0));
+
 	}
 
 	texture::texture(const std::string& file) 
@@ -94,9 +100,9 @@ namespace graphics {
 		: image(width, height){
 		_init_texture();
 
-		for (size_t i = 0; i < width * height * 16; i++) {
-			if(i % 4 == 0)
-				get_buffer()[i] = (uchar)255;
+		for (size_t i = 0; i < width * height; i++) {
+			//set_rgba((i % width), (uint)(i / width), 255 * (1.0f * rand() / RAND_MAX), 255 * (1.0f * rand() / RAND_MAX), 255 * (1.0f * rand() / RAND_MAX), 255);
+			set_rgba((i % width), (uint)(i / width), 255, 0, 0, 255);
 		}
 	}
 
@@ -110,14 +116,20 @@ namespace graphics {
 		glCall(glActiveTexture(GL_TEXTURE0 + slot));
 		glCall(glBindTexture(GL_TEXTURE_2D, id));
 	}
-
+	
 	void texture::unbind() const {
 		glCall(glBindTexture(GL_TEXTURE_2D, 0));
 	}
 
-	void texture::pixel_update() {
+	void texture::set_rgba(uint x, uint y, uchar r, uchar g, uchar b, uchar a) {
+		uchar* data = (uchar*)_alloca(sizeof(uchar) * 4);
+
+		data[0] = r;
+		data[1] = g;
+		data[2] = b;
+		data[3] = a;
+
 		bind();
-		glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, get_width(), get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, get_buffer()));
-		unbind();
-	}
-}
+		glCall(glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data));
+	};
+};
