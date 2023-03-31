@@ -60,20 +60,28 @@ namespace wfc {
 					i++;
 				}
 			}
-		}
+
+		};
 
 		//============================================================================================================
 		//============================================================================================================
 		//============================================================================================================
 
-		/*pixel_constraint::pixel_constraint(std::std::unordered_map<std::string, void*> varargs)
+		pixel_constraint::pixel_constraint(std::unordered_map<std::string, void*> varargs)
 			: constraint(varargs) {
 			
-			std::vector<uint> up;
-			std::vector<uint> down;
-			std::vector<uint> left;
-			std::vector<uint> right;
+			tile* sample_tiles = static_cast<tile*>(varargs["sample_tiles"]);
+			uint swidth = *(static_cast<uint*>(varargs["sample_width"]));
+			uint sheight = *(static_cast<uint*>(varargs["sample_height"]));
+			
+			tile ot = *owner;
 
-		}*/
+			int pix_up = sample_tiles[(ot.sample_x) + swidth * (ot.sample_y-1)].pixel_val;
+			int pix_down = sample_tiles[(ot.sample_x) + swidth * (ot.sample_y+1)].pixel_val;
+			int pix_left = sample_tiles[(ot.sample_x-1) + swidth * (ot.sample_y)].pixel_val;
+			int pix_right = sample_tiles[(ot.sample_x+1) + swidth * (ot.sample_y)].pixel_val;
+
+
+		}
 	}
 }

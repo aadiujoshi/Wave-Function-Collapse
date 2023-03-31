@@ -64,7 +64,7 @@ namespace wfc {
             proximity_constraint(std::unordered_map<std::string, void*> varargs);
             void propagate(tile_superpositions* tiles) override;
         };
-
+        
         class sudoku_constraint : public constraint {
         public:
             sudoku_constraint(std::unordered_map<std::string, void*> varargs);
@@ -73,10 +73,10 @@ namespace wfc {
 
         class pixel_constraint : public constraint {
         private:
-            uint* p_up;
-            uint* p_down;
-            uint* p_left;
-            uint* p_right;
+            std::vector<uint>& p_up;
+			std::vector<uint>& p_down;
+			std::vector<uint>& p_left;
+			std::vector<uint>& p_right;
         public:
             pixel_constraint(std::unordered_map<std::string, void*> varargs);
             void propagate(tile_superpositions* tiles) override;
